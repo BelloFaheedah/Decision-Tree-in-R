@@ -1,0 +1,92 @@
+---
+title: "Analysis of the feedback of customers using Decision Tree in R"
+output: html_notebook
+---
+
+
+**Background**
+
+Stuart Benson, the owner of a reputed car company, has a dataset containing the feedback of customers about the cars sold to them. 
+On the basis of this feedback, Stuart wants to find out the kind of features the customers are ideally looking for in a car. He wants to use this information to drive the development of a car that best suits customer needs.
+Stuart finds out that, while buying a car, customers usually look for features such as maintenance, safety, size, fuel efficiency, cost. To get an accurate and reliable result, Stuart decides to use a decision tree, which is a supervised learning algorithm used to analyze the input data. 
+
+```{r}
+cars<-read.csv("C:/Users/BELLO FAHEEDAH/Desktop/DASCA_ABDA/Datasets/Datasets/Cars_cust_data_v1.csv")
+head(cars)
+```
+
+## Description of the dataset
+Cust_id:- the identity of individual customers
+Cost:- the prices of the cars
+Maintenance:- the cost required for maintaining a car
+doors:- the number of doors that a car has
+persons:- the number of people that can travel comfortably in a car
+lug_boot:- the size of the boot of the car
+safety:- the level of safety provided by a car
+color:- the color of a car
+Cust_Opinion:- the opinion of the customers
+```{r}
+library(rpart)
+```
+
+```{r}
+attach(cars)
+```
+
+
+
+Creating the Classification Tree
+```{r}
+fitted_tree<-rpart(Cust_Opinion~ Cost +Maintainance +doors +persons + lug_boot + safety +color, method = "class", data=cars)
+fitted_tree
+```
+```{r}
+printcp(fitted_tree)
+```
+
+Visualizing the cross-validation results against their central points
+```{r}
+plotcp(fitted_tree)
+```
+
+Create the structure of the classification tree 
+```{r}
+plot(fitted_tree, uniform = TRUE, main="Classification Tree Cars")
+text(fitted_tree, use.n=TRUE, all=TRUE, cex=0.8)
+```
+```{r}
+post(fitted_tree, file= "tree.ps", title = "Classification Tree of Cars")
+```
+
+Below is a summary of the process of splitting the nodes of the classification tree into branches
+```{r}
+summary(fitted_tree)
+```
+```{r}
+prunedFit=prune(fitted_tree, cp= fitted_tree$cptable[which.min(fitted_tree$cptable[, "xerror"]), "CP"])
+```
+
+```{r}
+plot(prunedFit, uniform = TRUE, main="Classification Tree Cars")
+text(prunedFit, use.n=TRUE, all=TRUE, cex=0.76)
+
+```
+
+By looking at the cross-validation results, it can be concluded that the classification tree created is a good fit. The pruned tree is the same as the original classification tree, which indicates that no overfitting has occured in this model. 
+
+
+The following command helps identify the node that provides the attributes for the most liked and most disliked cars.
+```{r}
+print(fitted_tree)
+```
+So far, from the classification tree, conclusions can be drawn about customer opinions. On the basis of the opinions, the final rules for preferred cars can be created, as shown below:
+
+Some rules for the attribute of the Bad cars:
+:. Num_persons = 2
+:. Num_persons = more than 2 but safety = low
+:. Num_persons more than 2 and safety = not low but cost = very high and 
+   also maintenance = very high
+
+Some rules for the attributes of the Good cars:
+:. Num_persons = more than 2, safety = high/med, cost = low/med and lug_boot    = big/med
+:. Num_persons = more than 2, safety = high/med, cost = low/med and lug_boot    = small but doors = more than 3
