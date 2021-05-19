@@ -1,5 +1,6 @@
 # Decision-Tree-in-R
-Analyzing data by creating a decision tree in R
+Analyzing data by creating a decision tree in R.
+
 Organizations face various situations where a single decision can have a big impact on their growth and future prospects. 
 In such situations, decision trees prove to be helpful in the decision-making process. 
 In a decision tree, the factors that may affect the decision constitute the branches of the tree.
